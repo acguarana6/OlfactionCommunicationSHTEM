@@ -40,45 +40,55 @@ purple = [1,0,1,1]
 
 class MainApp(App):
     def build(self):
-        Window.clearcolor = (1, 1, 1, 1)
+        Window.clearcolor = (0.5, 0.5, 0.5, 0.5)
         boxlayout = BoxLayout(orientation='vertical')
 
         label = Label(text='DATA SENDER APP',
                       size_hint=(.5, .5),
-                      pos_hint={'center_x': .5, 'center_y': .85}, color=[0, 0, 1, 1], font_size=70)
+                      pos_hint={'center_x': .5, 'center_y': .85}, color=[1, 1, 1, 1], font_size=70)
+        
+        """fetchKey = TextInput(
+            halign="left", font_size=55, hint_text='Key input to fetch', size_hint=(0.8, 1), pos_hint={"center_x": 0.5, "center_y": 0.65}
+        )"""
+        
+        #layout = FloatLayout(size=(300, 300))
+        layout = BoxLayout(orientation="vertical")
+        button = Button( text='START FETCHING DATA', size_hint=(0.8, 1), pos_hint={"center_x": 0.5, "center_y": 0.65},background_color=[0, 0, 1, 1])
 
-        layout = FloatLayout(size=(300, 300))
-        button = Button( text='START FETCHING DATA', size_hint=(.5, .15), pos_hint={"center_x": 0.5, "center_y": 0.65})
+        layout.add_widget(label);
+        
+        #layout.add_widget(fetchKey)
         layout.add_widget(button)
         button.bind(on_press=self.on_press_button)
-        layout.add_widget(label);
+        
 
         self.progresslabel = Label(text='On standby',
                       size_hint=(.5, .5),
-                      pos_hint={'center_x': .5, 'center_y': .53}, color=[0, 0, 1, 1], font_size=30)
+                      pos_hint={'center_x': .5, 'center_y': .53}, color=[1, 1, 1, 1], font_size=30)
 
         label2 = Label(text='CURRENT DATA:',
                       size_hint=(.5, .5),
-                      color=[0, 0, 1, 1],
+                      color=[1, 1, 1, 1],
                       pos_hint={'center_x': .5, 'center_y': .375}, font_size=60)
-        layout.add_widget(label2);
         layout.add_widget(self.progresslabel);
+        layout.add_widget(label2);
+        
 
-        dropdown = DropDown(size_hint=(.5, .5))
-        btn1 = Button(text='AVERAGED DATA', size_hint_y=None, height=44)
-        btn2 = Button(text='RAW DATA', size_hint_y=None,  height=44)
-        btn1.bind(on_release=lambda btn: dropdown.select(btn1.text))
-        btn2.bind(on_release=lambda btn: dropdown.select(btn2.text))
-        dropdown.add_widget(btn1)
-        dropdown.add_widget(btn2)
-        mainbutton = Button(text='Data View', size_hint_x = 0.4, size_hint_y = 0.1, pos_hint={'center_x': 0.5, 'center_y': 0.25})
-        mainbutton.bind(on_release=dropdown.open)
-        dropdown.bind(on_select=lambda instance, x: setattr(mainbutton, 'text', x))
-        layout.add_widget(mainbutton);
+#dropdown = DropDown(size_hint=(.5, .5))
+#btn1 = Button(text='AVERAGED DATA', size_hint_y=None, height=44)
+#btn2 = Button(text='RAW DATA', size_hint_y=None,  height=44)
+#btn1.bind(on_release=lambda btn: dropdown.select(btn1.text))
+#btn2.bind(on_release=lambda btn: dropdown.select(btn2.text))
+#dropdown.add_widget(btn1)
+#dropdown.add_widget(btn2)
+#mainbutton = Button(text='Data View', size_hint_x = 0.4, size_hint_y = 0.1, pos_hint={'center_x': 0.5, 'center_y': 0.25})
+        #mainbutton.bind(on_release=dropdown.open)
+        #dropdown.bind(on_select=lambda instance, x: setattr(mainbutton, 'text', x))
+        #layout.add_widget(mainbutton);
 
-        gridlayout = GridLayout(cols=2, row_force_default=True, row_default_height=100, size_hint_x = 0.7, pos_hint={'center_x': 0.5, 'center_y': 0.25})
-        gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=200))
-        gridlayout.add_widget(Button(text='VALUE'))
+        gridlayout = GridLayout(cols=2, row_force_default=True, row_default_height=100, size_hint_x = 0.8, pos_hint={'center_x': 0.5, 'center_y': 0.25})
+        gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=200 ,background_color=[0, 0, 1, 1]) )
+        gridlayout.add_widget(Button(text='VALUE' ,background_color=[0, 0, 1, 1]) )
        
         self.alcoholSol = TextInput(
             halign="left", font_size=55, hint_text='Alcohol value'
@@ -147,7 +157,11 @@ class MainApp(App):
         if button_text == "Push to Database":
             db = firebase.database()
             b = db.child("toUser")
-            data = {"alcohol": self.alcoholSol.text,"ethanol": self.ethanolSol.text,"name": "test" }
+            
+            #Algorithm goes here
+            
+            #data = {"alcohol": self.alcoholSol.text,"ethanol": self.ethanolSol.text,"name": "test" }
+            data = {"result": 2}
             b.push(data)
             self.progresslabel.text = 'Data sent!'
             instance.text = "START FETCHING DATA"
@@ -156,3 +170,17 @@ class MainApp(App):
 if __name__ == '__main__':
     app = MainApp()
     app.run()
+
+'''Key
+
+-> eNose_to_app
+    -> Key
+
+-> App_to_User
+    ->Key
+
+-> App_to_emitter
+    ->Key
+'''
+
+
