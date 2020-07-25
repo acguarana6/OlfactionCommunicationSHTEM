@@ -28,8 +28,13 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
-  int x = Firebase.getInt("/finalint"); //need to replace this with getting JsonVariant type here.
+
+  //need to replace below line with getting JsonVariant type here.
+  int x = Firebase.getInt("/toUser");
+
+  //alternatively:
+  FirebaseObject y = Firebase.get("/toUser");
+  JsonVariant z = y.getJsonVariant("/toUser");
 
   if (isnan(x)) //could also use success() method
   {
