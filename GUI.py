@@ -12,6 +12,7 @@ from kivy.uix.textinput import TextInput
 from kivy.graphics import *
 from kivy.core.window import Window
 import csv
+import time
 
 '''from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
@@ -46,21 +47,21 @@ class MainApp(App):
         label = Label(text='DATA SENDER APP',
                       size_hint=(.5, .5),
                       pos_hint={'center_x': .5, 'center_y': .85}, color=[1, 1, 1, 1], font_size=70)
-        
+
         """fetchKey = TextInput(
             halign="left", font_size=55, hint_text='Key input to fetch', size_hint=(0.8, 1), pos_hint={"center_x": 0.5, "center_y": 0.65}
         )"""
-        
+
         #layout = FloatLayout(size=(300, 300))
         layout = BoxLayout(orientation="vertical")
         button = Button( text='START FETCHING DATA', size_hint=(0.8, 1), pos_hint={"center_x": 0.5, "center_y": 0.65},background_color=[0, 0, 1, 1])
 
         layout.add_widget(label);
-        
+
         #layout.add_widget(fetchKey)
         layout.add_widget(button)
         button.bind(on_press=self.on_press_button)
-        
+
 
         self.progresslabel = Label(text='On standby',
                       size_hint=(.5, .5),
@@ -72,7 +73,7 @@ class MainApp(App):
                       pos_hint={'center_x': .5, 'center_y': .375}, font_size=60)
         layout.add_widget(self.progresslabel);
         layout.add_widget(label2);
-        
+
 
 #dropdown = DropDown(size_hint=(.5, .5))
 #btn1 = Button(text='AVERAGED DATA', size_hint_y=None, height=44)
@@ -89,24 +90,24 @@ class MainApp(App):
         gridlayout = GridLayout(cols=2, row_force_default=True, row_default_height=100, size_hint_x = 0.8, pos_hint={'center_x': 0.5, 'center_y': 0.25})
         gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=200 ,background_color=[0, 0, 1, 1]) )
         gridlayout.add_widget(Button(text='VALUE' ,background_color=[0, 0, 1, 1]) )
-       
+
         self.alcoholSol = TextInput(
             halign="left", font_size=55, hint_text='Alcohol value'
         )
-        
+
         #gridlayout.add_widget(Button(text='200'))
-        
+
         self.ethanolSol = TextInput(
             halign="left", font_size=55, hint_text='Ethanol value'
         )
-        
+
         gridlayout.add_widget(Button(text='ETHANOL', size_hint_x=None, width=200))
         gridlayout.add_widget(self.ethanolSol)
         gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=200))
         gridlayout.add_widget(self.alcoholSol)
-        
+
         #gridlayout.add_widget(Button(text='200'))
-        
+
         boxlayout.add_widget(layout)
         boxlayout.add_widget(gridlayout)
 
@@ -118,10 +119,10 @@ class MainApp(App):
         print('You pressed the button!')
         button_text = instance.text
         if button_text == 'START FETCHING DATA':
-        
+
             self.progresslabel.text = 'Fetching data...'
             #create a csv file with all of the values from the firebase database
-            
+
             db = firebase.database()
             a = db.child("smells")
             smelldict = a.get().val()
@@ -135,9 +136,10 @@ class MainApp(App):
                     name = db.child("smells").child(key).child("name").get().val()
                     writer.writerow([alcohol, ethanol, name])
             print("Finished writing csv file.")
-            
+
             self.progresslabel.text = 'Data fetched! CSV generated in folder.'
-            
+
+
             with open('finalsmelllist.csv', 'r') as file:
                 reader = csv.reader(file)
                 counter = 0.0
@@ -150,16 +152,21 @@ class MainApp(App):
                     counter = counter + 1.0
             self.alcoholSol.text = str(alcoholcount / counter)
             self.ethanolSol.text = str(ethanolcount / counter)
-            
+
             self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
 
-            instance.text = "Push to Database"
+            time.sleep(3)
+            print('3 seconds are over')
+            self.progresslabel.text = 'On Standby. Looking for signal from synthesizer.'
+            instance.text = "Check for Signal."
+
+            #instance.text = "Push to Database"
         if button_text == "Push to Database":
             db = firebase.database()
             b = db.child("toUser")
-            
+
             #Algorithm goes here
-            
+
             #data = {"alcohol": self.alcoholSol.text,"ethanol": self.ethanolSol.text,"name": "test" }
             data = {"result": 2}
             b.push(data)
@@ -182,5 +189,3 @@ if __name__ == '__main__':
 -> App_to_emitter
     ->Key
 '''
-
-
