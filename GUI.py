@@ -111,6 +111,9 @@ class MainApp(App):
         boxlayout.add_widget(layout)
         boxlayout.add_widget(gridlayout)
 
+        #db = firebase.database()
+        #db.child("Signal").push("")
+
 
 
         return boxlayout
@@ -157,8 +160,10 @@ class MainApp(App):
 
             time.sleep(3)
             print('3 seconds are over')
-            self.progresslabel.text = 'On Standby. Looking for signal from synthesizer.'
-            instance.text = "Check for Signal."
+            self.progresslabel.text = 'On Standby. Looking for signal from synthesizer (every 2 seconds).'
+            instance.text = "Check for Signal"
+
+
 
             #instance.text = "Push to Database"
         if button_text == "Push to Database":
@@ -172,6 +177,28 @@ class MainApp(App):
             b.push(data)
             self.progresslabel.text = 'Data sent!'
             instance.text = "START FETCHING DATA"
+
+        if button_text == "Check for Signal":
+            x = 1
+            self.progresslabel.text = 'Checking for Signal......'
+            while True:
+                ref = firebase.database()
+                users = ref.child("Signal").get()
+                a = users.val()
+                #print(a)
+                if(a == None):
+                    self.progresslabel.text = 'On Standby. No Signal yet.'
+                else:
+                    self.progresslabel.text = 'Ready to Go!'
+                    instance.text = "Push to Database"
+                    break
+                if(x==10):
+                    print('program terminated')
+                    instance.text = "No Signal Found"
+                    break
+                x = x+1
+                print(x)
+                time.sleep(2)
 
 
 if __name__ == '__main__':
