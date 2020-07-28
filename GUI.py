@@ -163,30 +163,18 @@ class MainApp(App):
             self.progresslabel.text = 'On Standby. Looking for signal from synthesizer (every 2 seconds).'
             instance.text = "Check for Signal"
 
-
-
             #instance.text = "Push to Database"
-        if button_text == "Push to Database":
-            db = firebase.database()
-            b = db.child("toUser")
 
-            #Algorithm goes here
-
-            #data = {"alcohol": self.alcoholSol.text,"ethanol": self.ethanolSol.text,"name": "test" }
-            data = 3
-            b.child("finalint").set(data)
-            self.progresslabel.text = 'Data sent!'
-            instance.text = "START FETCHING DATA"
-
+        
         if button_text == "Check for Signal":
             x = 1
             self.progresslabel.text = 'Checking for Signal......'
             while True:
                 ref = firebase.database()
                 users = ref.child("Signal").get()
-                a = users.val()
-                #print(a)
-                if(a == None):
+                key = users.val()
+                #print(key)
+                if(key == None):
                     self.progresslabel.text = 'On Standby. No Signal yet.'
                 else:
                     self.progresslabel.text = 'Ready to Go!'
@@ -199,6 +187,22 @@ class MainApp(App):
                 x = x+1
                 print(x)
                 time.sleep(2)
+        
+        
+        if button_text == "Push to Database":
+            db = firebase.database()
+            keyDict = firebase.database().child("Signal").get().val()
+            keyList = list(keyDict)
+            finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
+            b = db.child(finalKey)
+
+            #Algorithm goes here
+
+            #data = {"alcohol": self.alcoholSol.text,"ethanol": self.ethanolSol.text,"name": "test" }
+            data = 3
+            b.child("finalint").set(data)
+            self.progresslabel.text = 'Data sent!'
+            instance.text = "START FETCHING DATA"
 
 
 if __name__ == '__main__':
