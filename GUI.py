@@ -173,8 +173,8 @@ class MainApp(App):
             #Algorithm goes here
 
             #data = {"alcohol": self.alcoholSol.text,"ethanol": self.ethanolSol.text,"name": "test" }
-            data = {"result": 2}
-            b.push(data)
+            data = 3
+            b.child("finalint").set(data)
             self.progresslabel.text = 'Data sent!'
             instance.text = "START FETCHING DATA"
 
