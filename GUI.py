@@ -11,6 +11,7 @@ import random
 from kivy.uix.textinput import TextInput
 from kivy.graphics import *
 from kivy.core.window import Window
+from kivy.uix.popup import Popup
 import csv
 import time
 
@@ -88,7 +89,7 @@ class MainApp(App):
         #layout.add_widget(mainbutton);
 
         gridlayout = GridLayout(cols=2, row_force_default=True, row_default_height=100, size_hint_x = 0.8, pos_hint={'center_x': 0.5, 'center_y': 0.25})
-        gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=200 ,background_color=[0, 0, 1, 1]) )
+        gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]) )
         gridlayout.add_widget(Button(text='VALUE' ,background_color=[0, 0, 1, 1]) )
 
         self.alcoholSol = TextInput(
@@ -97,14 +98,29 @@ class MainApp(App):
 
         #gridlayout.add_widget(Button(text='200'))
 
-        self.ethanolSol = TextInput(
-            halign="left", font_size=55, hint_text='Ethanol value'
+        self.hySulSol = TextInput(
+            halign="left", font_size=55, hint_text='Hydrogen Sulfide value'
         )
-
-        gridlayout.add_widget(Button(text='ETHANOL', size_hint_x=None, width=200,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.ethanolSol)
-        gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=200,background_color=[0, 0, 1, 1]))
+        
+        self.ammoniaSol = TextInput(
+            halign="left", font_size=55, hint_text='Ammonia value'
+        )
+        
+        self.formalSol = TextInput(
+            halign="left", font_size=55, hint_text='Formaldehyde value'
+        )
+        
+        gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
         gridlayout.add_widget(self.alcoholSol)
+        
+        gridlayout.add_widget(Button(text='AMMONIA', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.ammoniaSol)
+        
+        gridlayout.add_widget(Button(text='FORMALDEHYDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.formalSol)
+        
+        gridlayout.add_widget(Button(text='HYDROGEN SULFIDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.hySulSol)
 
         #gridlayout.add_widget(Button(text='200'))
 
@@ -132,12 +148,13 @@ class MainApp(App):
             print(smelldict)
             with open('finalsmelllist.csv', 'w', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(["alcohol", "ethanol", "name"])
+                writer.writerow(["alcohol", "ammonia", "formaldehyde", "hydrogen sulfide"])
                 for key in smelldict:
                     alcohol = db.child("smells").child(key).child("alcohol").get().val()
-                    ethanol = db.child("smells").child(key).child("ethanol").get().val()
-                    name = db.child("smells").child(key).child("name").get().val()
-                    writer.writerow([alcohol, ethanol, name])
+                    ammonia = db.child("smells").child(key).child("ammonia").get().val()
+                    formal = db.child("smells").child(key).child("formaldehyde").get().val()
+                    hySul = db.child("smells").child(key).child("hydrogen sulfide").get().val()
+                    writer.writerow([alcohol, ammonia, formal, hySul])
             print("Finished writing csv file.")
 
             self.progresslabel.text = 'Data fetched! CSV generated in folder.'
@@ -147,14 +164,20 @@ class MainApp(App):
                 reader = csv.reader(file)
                 counter = 0.0
                 alcoholcount = 0.0
-                ethanolcount = 0.0
+                ammoniacount = 0.0
+                formalcount = 0.0
+                hysulcount = 0.0
                 for row in reader:
                     if counter != 0.0:
                         alcoholcount = alcoholcount + float(row[0])
-                        ethanolcount = ethanolcount + float(row[1])
+                        ammoniacount = ammoniacount + float(row[1])
+                        formalcount = formalcount + float(row[2])
+                        hysulcount = hysulcount + float(row[3])
                     counter = counter + 1.0
             self.alcoholSol.text = str(alcoholcount / counter)
-            self.ethanolSol.text = str(ethanolcount / counter)
+            self.ammoniaSol.text = str(ammoniacount / counter)
+            self.formalSol.text = str(formalcount / counter)
+            self.hySulSol.text = str(hysulcount / counter)
 
             self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
             self.swap_label('Data fetched! CSV generated in folder. On standby for a signal.')
@@ -184,10 +207,24 @@ class MainApp(App):
                     keyList = list(keyDict)
                     finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
                     
-                    #keyCount = firebase.database().child("Signal").getChildrenCount();
-                    #print(keyCount)
-                    self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
-                    instance.text = "Push to Database"
+                    keyCount = len(keyDict)
+                    print(keyCount)
+                    if(keyCount==1):
+                        self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
+                        instance.text = "Push to Database"
+                    else:
+                        content = BoxLayout(orientation="vertical")
+                        button = Button( text='START FETCHING DATA', size_hint=(0.8, 1), pos_hint={"center_x": 0.5, "center_y": 0.65},background_color=[0, 0, 1, 1])
+                        content.add_widget(button)
+                        button.bind(on_press=self.on_press_button)
+
+                        popup = Popup(content=content, auto_dismiss=False)
+
+                        # bind the on_press event of the button to the dismiss function
+                        content.bind(on_press=popup.dismiss)
+
+                        # open the popup
+                        popup.open()
                     break
                 if(x==10):
                     print('program terminated')
