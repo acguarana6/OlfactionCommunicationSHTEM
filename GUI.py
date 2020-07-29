@@ -101,9 +101,9 @@ class MainApp(App):
             halign="left", font_size=55, hint_text='Ethanol value'
         )
 
-        gridlayout.add_widget(Button(text='ETHANOL', size_hint_x=None, width=200))
+        gridlayout.add_widget(Button(text='ETHANOL', size_hint_x=None, width=200,background_color=[0, 0, 1, 1]))
         gridlayout.add_widget(self.ethanolSol)
-        gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=200))
+        gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=200,background_color=[0, 0, 1, 1]))
         gridlayout.add_widget(self.alcoholSol)
 
         #gridlayout.add_widget(Button(text='200'))
@@ -117,7 +117,7 @@ class MainApp(App):
 
 
         return boxlayout
-
+    
     def on_press_button(self, instance):
         print('You pressed the button!')
         button_text = instance.text
@@ -157,10 +157,12 @@ class MainApp(App):
             self.ethanolSol.text = str(ethanolcount / counter)
 
             self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
-
-            time.sleep(3)
+            self.swap_label('Data fetched! CSV generated in folder. On standby for a signal.')
+            
+            '''print('3 seconds start')
+            time.sleep(2)
             print('3 seconds are over')
-            self.progresslabel.text = 'On Standby. Looking for signal from synthesizer (every 2 seconds).'
+            self.swap_label('On Standby. Looking for signal from synthesizer (every 2 seconds).')'''
             instance.text = "Check for Signal"
 
             #instance.text = "Push to Database"
@@ -177,7 +179,14 @@ class MainApp(App):
                 if(key == None):
                     self.progresslabel.text = 'On Standby. No Signal yet.'
                 else:
-                    self.progresslabel.text = 'Ready to Go!'
+                    db = firebase.database()
+                    keyDict = firebase.database().child("Signal").get().val()
+                    keyList = list(keyDict)
+                    finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
+                    
+                    #keyCount = firebase.database().child("Signal").getChildrenCount();
+                    #print(keyCount)
+                    self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
                     instance.text = "Push to Database"
                     break
                 if(x==10):
@@ -203,6 +212,9 @@ class MainApp(App):
             b.child("finalint").set(data)
             self.progresslabel.text = 'Data sent!'
             instance.text = "START FETCHING DATA"
+    def swap_label(self, progText):
+        self.progresslabel.text = progText
+        print(progText)
 
 
 if __name__ == '__main__':
