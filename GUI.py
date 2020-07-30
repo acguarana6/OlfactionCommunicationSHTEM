@@ -42,6 +42,8 @@ purple = [1,0,1,1]
 
 class MainApp(App):
     def build(self):
+        chosenKeyInd = 0
+        
         Window.clearcolor = (0.5, 0.5, 0.5, 0.5)
         boxlayout = BoxLayout(orientation='vertical')
 
@@ -205,30 +207,40 @@ class MainApp(App):
                     db = firebase.database()
                     keyDict = firebase.database().child("Signal").get().val()
                     keyList = list(keyDict)
+                    chosenKeyInd = 0
                     finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
                     
-                    keyCount = len(keyDict)
+                    keyCount = int(len(keyDict))
                     print(keyCount)
                     if(keyCount==1):
                         self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
                         instance.text = "Push to Database"
                     else:
                         content = BoxLayout(orientation="vertical")
-                        button = Button( text='START FETCHING DATA', size_hint=(0.8, 1), pos_hint={"center_x": 0.5, "center_y": 0.65},background_color=[0, 0, 1, 1])
-                        content.add_widget(button)
-                        button.bind(on_press=self.on_press_button)
+                        
+                        for x in range(0,keyCount):
+                            db = firebase.database()
+                            keyDict = firebase.database().child("Signal").get().val()
+                            keyList = list(keyDict)
+                            thisKey = firebase.database().child("Signal").child(keyList[x]).get().val()
 
-                        popup = Popup(content=content, auto_dismiss=False)
+                            
+                            button = Button( text=str(thisKey),background_color=[0, 0, 1, 1])
+                            content.add_widget(button)
+                            button.thisKeyInd = x
+                            button.bind(on_press=self.chooseSignal)
+                            button.subInst = instance
+
+                        self.popup = Popup(content=content, auto_dismiss=False, title = "Pick a synthesis key!", title_align = "center", )
 
                         # bind the on_press event of the button to the dismiss function
-                        content.bind(on_press=popup.dismiss)
 
                         # open the popup
-                        popup.open()
+                        self.popup.open()
                     break
                 if(x==10):
                     print('program terminated')
-                    instance.text = "No Signal Found"
+                    self.progresslabel.text = "No Signal Found"
                     break
                 x = x+1
                 print(x)
@@ -239,7 +251,7 @@ class MainApp(App):
             db = firebase.database()
             keyDict = firebase.database().child("Signal").get().val()
             keyList = list(keyDict)
-            finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
+            finalKey = firebase.database().child("Signal").child(keyList[self.chosenKeyInd]).get().val()
             b = db.child(finalKey)
 
             #Algorithm goes here
@@ -252,6 +264,21 @@ class MainApp(App):
     def swap_label(self, progText):
         self.progresslabel.text = progText
         print(progText)
+    def chooseSignal(self, instance):
+        
+        self.chosenKeyInd = instance.thisKeyInd
+        
+        db = firebase.database()
+        keyDict = firebase.database().child("Signal").get().val()
+        keyList = list(keyDict)
+        finalKey = firebase.database().child("Signal").child(keyList[self.chosenKeyInd]).get().val()
+        
+        self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
+        instance.subInst.text = "Push to Database"
+        
+        
+        self.popup.dismiss()
+
 
 
 if __name__ == '__main__':
