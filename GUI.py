@@ -111,8 +111,10 @@ class MainApp(App):
         boxlayout.add_widget(layout)
         boxlayout.add_widget(gridlayout)
 
-        #db = firebase.database()
-        #db.child("Signal").push("")
+        db = firebase.database()
+        db.child("testing (for removal)").push("hello")
+        db.child("testing (for removal)").push("hello2")
+        db.child("testing (for removal)").remove()
 
 
 
@@ -218,6 +220,10 @@ class MainApp(App):
             b.child("finalint").set(data)
             self.progresslabel.text = 'Data sent!'
             instance.text = "START FETCHING DATA"
+            #db.child("testing (for removal)").remove()
+            #db.child("Signal").remove()
+            #db.child("smells").remove()
+            #db.child("synthKey").remove()
     def swap_label(self, progText):
         self.progresslabel.text = progText
         print(progText)
