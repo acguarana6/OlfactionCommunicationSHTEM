@@ -15,7 +15,6 @@ from kivy.uix.popup import Popup
 import csv
 import time
 
-#hello
 '''from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 from kivymd.uix.datatables import MDDataTable
@@ -44,11 +43,7 @@ purple = [1,0,1,1]
 class MainApp(App):
     def build(self):
         chosenKeyInd = 0
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
         Window.clearcolor = (0.5, 0.5, 0.5, 0.5)
         boxlayout = BoxLayout(orientation='vertical')
 
@@ -107,7 +102,6 @@ class MainApp(App):
 
         self.hySulSol = TextInput(
             halign="left", font_size=55, hint_text='Hydrogen Sulfide value'
-<<<<<<< HEAD
         )
 
         self.ammoniaSol = TextInput(
@@ -118,38 +112,8 @@ class MainApp(App):
             halign="left", font_size=55, hint_text='Formaldehyde value'
         )
 
-=======
-        )
-        
-        self.ammoniaSol = TextInput(
-            halign="left", font_size=55, hint_text='Ammonia value'
-        )
-        
-        self.formalSol = TextInput(
-            halign="left", font_size=55, hint_text='Formaldehyde value'
-        )
-        
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
         gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
         gridlayout.add_widget(self.alcoholSol)
-        
-        gridlayout.add_widget(Button(text='AMMONIA', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.ammoniaSol)
-        
-        gridlayout.add_widget(Button(text='FORMALDEHYDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.formalSol)
-        
-        gridlayout.add_widget(Button(text='HYDROGEN SULFIDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.hySulSol)
-
-        gridlayout.add_widget(Button(text='AMMONIA', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.ammoniaSol)
-
-        gridlayout.add_widget(Button(text='FORMALDEHYDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.formalSol)
-
-        gridlayout.add_widget(Button(text='HYDROGEN SULFIDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.hySulSol)
 
         gridlayout.add_widget(Button(text='AMMONIA', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
         gridlayout.add_widget(self.ammoniaSol)
@@ -171,7 +135,7 @@ class MainApp(App):
 
 
         return boxlayout
-    
+
     def on_press_button(self, instance):
         print('You pressed the button!')
         button_text = instance.text
@@ -179,22 +143,14 @@ class MainApp(App):
 
             self.progresslabel.text = 'Fetching data...'
             #create a csv file with all of the values from the firebase database
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
             ref = firebase.database()
             data = ref.child("smells").get()
             key = data.val()
             #print(key)
             if(key == None):
                 self.progresslabel.text = 'No data currently in database'
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
             else:
                 db = firebase.database()
                 a = db.child("smells")
@@ -235,27 +191,16 @@ class MainApp(App):
 
                 self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
                 self.swap_label('Data fetched! CSV generated in folder. On standby for a signal.')
-<<<<<<< HEAD
 
-=======
-                
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
                 '''print('3 seconds start')
                 time.sleep(2)
                 print('3 seconds are over')
                 self.swap_label('On Standby. Looking for signal from synthesizer (every 2 seconds).')'''
                 instance.text = "Check for Signal"
-<<<<<<< HEAD
 
                 #instance.text = "Push to Database"
 
-                #instance.text = "Push to Database"
-=======
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
 
-                #instance.text = "Push to Database"
-
-        
         if button_text == "Check for Signal":
             x = 1
             self.progresslabel.text = 'Checking for Signal......'
@@ -272,11 +217,7 @@ class MainApp(App):
                     keyList = list(keyDict)
                     chosenKeyInd = 0
                     finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
-<<<<<<< HEAD
 
-=======
-                    
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
                     keyCount = int(len(keyDict))
                     print(keyCount)
                     if(keyCount==1):
@@ -284,22 +225,14 @@ class MainApp(App):
                         instance.text = "Push to Database"
                     else:
                         content = BoxLayout(orientation="vertical")
-<<<<<<< HEAD
 
-=======
-                        
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
                         for x in range(0,keyCount):
                             db = firebase.database()
                             keyDict = firebase.database().child("Signal").get().val()
                             keyList = list(keyDict)
                             thisKey = firebase.database().child("Signal").child(keyList[x]).get().val()
 
-<<<<<<< HEAD
 
-=======
-                            
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
                             button = Button( text=str(thisKey),background_color=[0, 0, 1, 1])
                             content.add_widget(button)
                             button.thisKeyInd = x
@@ -320,8 +253,8 @@ class MainApp(App):
                 x = x+1
                 print(x)
                 time.sleep(2)
-        
-        
+
+
         if button_text == "Push to Database":
             db = firebase.database()
             keyDict = firebase.database().child("Signal").get().val()
@@ -340,32 +273,18 @@ class MainApp(App):
         self.progresslabel.text = progText
         print(progText)
     def chooseSignal(self, instance):
-<<<<<<< HEAD
 
         self.chosenKeyInd = instance.thisKeyInd
 
-=======
-        
-        self.chosenKeyInd = instance.thisKeyInd
-        
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
         db = firebase.database()
         keyDict = firebase.database().child("Signal").get().val()
         keyList = list(keyDict)
         finalKey = firebase.database().child("Signal").child(keyList[self.chosenKeyInd]).get().val()
-<<<<<<< HEAD
 
         self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
         instance.subInst.text = "Push to Database"
 
 
-=======
-        
-        self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
-        instance.subInst.text = "Push to Database"
-        
-        
->>>>>>> a5113b046fc3f815717ef4be263b8cb8b4b46c9e
         self.popup.dismiss()
 
 
