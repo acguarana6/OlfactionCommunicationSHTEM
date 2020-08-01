@@ -125,6 +125,15 @@ class MainApp(App):
         gridlayout.add_widget(Button(text='HYDROGEN SULFIDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
         gridlayout.add_widget(self.hySulSol)
 
+        gridlayout.add_widget(Button(text='AMMONIA', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.ammoniaSol)
+
+        gridlayout.add_widget(Button(text='FORMALDEHYDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.formalSol)
+
+        gridlayout.add_widget(Button(text='HYDROGEN SULFIDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.hySulSol)
+
         #gridlayout.add_widget(Button(text='200'))
 
         boxlayout.add_widget(layout)
@@ -198,6 +207,8 @@ class MainApp(App):
                 print('3 seconds are over')
                 self.swap_label('On Standby. Looking for signal from synthesizer (every 2 seconds).')'''
                 instance.text = "Check for Signal"
+
+                #instance.text = "Push to Database"
 
                 #instance.text = "Push to Database"
 
