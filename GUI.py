@@ -11,9 +11,11 @@ import random
 from kivy.uix.textinput import TextInput
 from kivy.graphics import *
 from kivy.core.window import Window
+from kivy.uix.popup import Popup
 import csv
 import time
 
+#hello
 '''from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 from kivymd.uix.datatables import MDDataTable
@@ -41,6 +43,8 @@ purple = [1,0,1,1]
 
 class MainApp(App):
     def build(self):
+        chosenKeyInd = 0
+
         Window.clearcolor = (0.5, 0.5, 0.5, 0.5)
         boxlayout = BoxLayout(orientation='vertical')
 
@@ -88,7 +92,7 @@ class MainApp(App):
         #layout.add_widget(mainbutton);
 
         gridlayout = GridLayout(cols=2, row_force_default=True, row_default_height=100, size_hint_x = 0.8, pos_hint={'center_x': 0.5, 'center_y': 0.25})
-        gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=200 ,background_color=[0, 0, 1, 1]) )
+        gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]) )
         gridlayout.add_widget(Button(text='VALUE' ,background_color=[0, 0, 1, 1]) )
 
         self.alcoholSol = TextInput(
@@ -97,24 +101,37 @@ class MainApp(App):
 
         #gridlayout.add_widget(Button(text='200'))
 
-        self.ethanolSol = TextInput(
-            halign="left", font_size=55, hint_text='Ethanol value'
+        self.hySulSol = TextInput(
+            halign="left", font_size=55, hint_text='Hydrogen Sulfide value'
         )
 
-        gridlayout.add_widget(Button(text='ETHANOL', size_hint_x=None, width=200,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.ethanolSol)
-        gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=200,background_color=[0, 0, 1, 1]))
+        self.ammoniaSol = TextInput(
+            halign="left", font_size=55, hint_text='Ammonia value'
+        )
+
+        self.formalSol = TextInput(
+            halign="left", font_size=55, hint_text='Formaldehyde value'
+        )
+
+        gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
         gridlayout.add_widget(self.alcoholSol)
+
+        gridlayout.add_widget(Button(text='AMMONIA', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.ammoniaSol)
+
+        gridlayout.add_widget(Button(text='FORMALDEHYDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.formalSol)
+
+        gridlayout.add_widget(Button(text='HYDROGEN SULFIDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.hySulSol)
 
         #gridlayout.add_widget(Button(text='200'))
 
         boxlayout.add_widget(layout)
         boxlayout.add_widget(gridlayout)
 
-        db = firebase.database()
-        db.child("testing (for removal)").push("hello")
-        db.child("testing (for removal)").push("hello2")
-        db.child("testing (for removal)").remove()
+        #db = firebase.database()
+        #db.child("Signal").push("")
 
 
 
@@ -127,53 +144,62 @@ class MainApp(App):
 
             self.progresslabel.text = 'Fetching data...'
             #create a csv file with all of the values from the firebase database
+
             ref = firebase.database()
             data = ref.child("smells").get()
             key = data.val()
             #print(key)
             if(key == None):
-                self.progresslabel.text = 'No Data currently in database'
+                self.progresslabel.text = 'No data currently in database'
 
-            db = firebase.database()
-            a = db.child("smells")
-            smelldict = a.get().val()
-            print(smelldict)
-            with open('finalsmelllist.csv', 'w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(["alcohol", "ethanol", "name"])
-                for key in smelldict:
-                    alcohol = db.child("smells").child(key).child("alcohol").get().val()
-                    ethanol = db.child("smells").child(key).child("ethanol").get().val()
-                    name = db.child("smells").child(key).child("name").get().val()
-                    writer.writerow([alcohol, ethanol, name])
-            print("Finished writing csv file.")
+            else:
+                db = firebase.database()
+                a = db.child("smells")
+                smelldict = a.get().val()
+                print(smelldict)
+                with open('finalsmelllist.csv', 'w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow(["alcohol", "ammonia", "formaldehyde", "hydrogen sulfide"])
+                    for key in smelldict:
+                        alcohol = db.child("smells").child(key).child("alcohol").get().val()
+                        ammonia = db.child("smells").child(key).child("ammonia").get().val()
+                        formal = db.child("smells").child(key).child("formaldehyde").get().val()
+                        hySul = db.child("smells").child(key).child("hydrogen sulfide").get().val()
+                        writer.writerow([alcohol, ammonia, formal, hySul])
+                print("Finished writing csv file.")
 
-            self.progresslabel.text = 'Data fetched! CSV generated in folder.'
+                self.progresslabel.text = 'Data fetched! CSV generated in folder.'
 
 
-            with open('finalsmelllist.csv', 'r') as file:
-                reader = csv.reader(file)
-                counter = 0.0
-                alcoholcount = 0.0
-                ethanolcount = 0.0
-                for row in reader:
-                    if counter != 0.0:
-                        alcoholcount = alcoholcount + float(row[0])
-                        ethanolcount = ethanolcount + float(row[1])
-                    counter = counter + 1.0
-            self.alcoholSol.text = str(alcoholcount / counter)
-            self.ethanolSol.text = str(ethanolcount / counter)
+                with open('finalsmelllist.csv', 'r') as file:
+                    reader = csv.reader(file)
+                    counter = 0.0
+                    alcoholcount = 0.0
+                    ammoniacount = 0.0
+                    formalcount = 0.0
+                    hysulcount = 0.0
+                    for row in reader:
+                        if counter != 0.0:
+                            alcoholcount = alcoholcount + float(row[0])
+                            ammoniacount = ammoniacount + float(row[1])
+                            formalcount = formalcount + float(row[2])
+                            hysulcount = hysulcount + float(row[3])
+                        counter = counter + 1.0
+                self.alcoholSol.text = str(alcoholcount / counter)
+                self.ammoniaSol.text = str(ammoniacount / counter)
+                self.formalSol.text = str(formalcount / counter)
+                self.hySulSol.text = str(hysulcount / counter)
 
-            self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
-            self.swap_label('Data fetched! CSV generated in folder. On standby for a signal.')
+                self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
+                self.swap_label('Data fetched! CSV generated in folder. On standby for a signal.')
 
-            '''print('3 seconds start')
-            time.sleep(2)
-            print('3 seconds are over')
-            self.swap_label('On Standby. Looking for signal from synthesizer (every 2 seconds).')'''
-            instance.text = "Check for Signal"
+                '''print('3 seconds start')
+                time.sleep(2)
+                print('3 seconds are over')
+                self.swap_label('On Standby. Looking for signal from synthesizer (every 2 seconds).')'''
+                instance.text = "Check for Signal"
 
-            #instance.text = "Push to Database"
+                #instance.text = "Push to Database"
 
 
         if button_text == "Check for Signal":
@@ -190,16 +216,40 @@ class MainApp(App):
                     db = firebase.database()
                     keyDict = firebase.database().child("Signal").get().val()
                     keyList = list(keyDict)
+                    chosenKeyInd = 0
                     finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
 
-                    #keyCount = firebase.database().child("Signal").getChildrenCount();
-                    #print(keyCount)
-                    self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
-                    instance.text = "Push to Database"
+                    keyCount = int(len(keyDict))
+                    print(keyCount)
+                    if(keyCount==1):
+                        self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
+                        instance.text = "Push to Database"
+                    else:
+                        content = BoxLayout(orientation="vertical")
+
+                        for x in range(0,keyCount):
+                            db = firebase.database()
+                            keyDict = firebase.database().child("Signal").get().val()
+                            keyList = list(keyDict)
+                            thisKey = firebase.database().child("Signal").child(keyList[x]).get().val()
+
+
+                            button = Button( text=str(thisKey),background_color=[0, 0, 1, 1])
+                            content.add_widget(button)
+                            button.thisKeyInd = x
+                            button.bind(on_press=self.chooseSignal)
+                            button.subInst = instance
+
+                        self.popup = Popup(content=content, auto_dismiss=False, title = "Pick a synthesis key!", title_align = "center", )
+
+                        # bind the on_press event of the button to the dismiss function
+
+                        # open the popup
+                        self.popup.open()
                     break
                 if(x==10):
                     print('program terminated')
-                    instance.text = "No Signal Found"
+                    self.progresslabel.text = "No Signal Found"
                     break
                 x = x+1
                 print(x)
@@ -210,7 +260,7 @@ class MainApp(App):
             db = firebase.database()
             keyDict = firebase.database().child("Signal").get().val()
             keyList = list(keyDict)
-            finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
+            finalKey = firebase.database().child("Signal").child(keyList[self.chosenKeyInd]).get().val()
             b = db.child(finalKey)
 
             #Algorithm goes here
@@ -220,13 +270,24 @@ class MainApp(App):
             b.child("finalint").set(data)
             self.progresslabel.text = 'Data sent!'
             instance.text = "START FETCHING DATA"
-            #db.child("testing (for removal)").remove()
-            #db.child("Signal").remove()
-            #db.child("smells").remove()
-            #db.child("synthKey").remove()
     def swap_label(self, progText):
         self.progresslabel.text = progText
         print(progText)
+    def chooseSignal(self, instance):
+
+        self.chosenKeyInd = instance.thisKeyInd
+
+        db = firebase.database()
+        keyDict = firebase.database().child("Signal").get().val()
+        keyList = list(keyDict)
+        finalKey = firebase.database().child("Signal").child(keyList[self.chosenKeyInd]).get().val()
+
+        self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
+        instance.subInst.text = "Push to Database"
+
+
+        self.popup.dismiss()
+
 
 
 if __name__ == '__main__':
@@ -234,13 +295,10 @@ if __name__ == '__main__':
     app.run()
 
 '''Key
-
 -> eNose_to_app
     -> Key
-
 -> App_to_User
     ->Key
-
 -> App_to_emitter
     ->Key
 '''
