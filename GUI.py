@@ -147,7 +147,7 @@ class MainApp(App):
             ref = firebase.database()
             data = ref.child("smells").get()
             key = data.val()
-            #print(key)
+            print("hello")
             if(key == None):
                 self.progresslabel.text = 'No data currently in database'
 
@@ -248,7 +248,62 @@ class MainApp(App):
                     break
                 if(x==10):
                     print('program terminated')
-                    self.progresslabel.text = "No Signal Found"
+                    self.progresslabel.text = "No Signal Found."
+                    instance.text = "Click button to check again for Signal."
+                    break
+                x = x+1
+                print(x)
+                time.sleep(2)
+
+        if button_text == "Click button to check again for Signal.":
+            x = 1
+            self.progresslabel.text = 'Checking for Signal......'
+            while True:
+                ref = firebase.database()
+                users = ref.child("Signal").get()
+                key = users.val()
+                #print(key)
+                if(key == None):
+                    self.progresslabel.text = 'On Standby. No Signal yet.'
+                else:
+                    db = firebase.database()
+                    keyDict = firebase.database().child("Signal").get().val()
+                    keyList = list(keyDict)
+                    chosenKeyInd = 0
+                    finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
+
+                    keyCount = int(len(keyDict))
+                    print(keyCount)
+                    if(keyCount==1):
+                        self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
+                        instance.text = "Push to Database"
+                    else:
+                        content = BoxLayout(orientation="vertical")
+
+                        for x in range(0,keyCount):
+                            db = firebase.database()
+                            keyDict = firebase.database().child("Signal").get().val()
+                            keyList = list(keyDict)
+                            thisKey = firebase.database().child("Signal").child(keyList[x]).get().val()
+
+
+                            button = Button( text=str(thisKey),background_color=[0, 0, 1, 1])
+                            content.add_widget(button)
+                            button.thisKeyInd = x
+                            button.bind(on_press=self.chooseSignal)
+                            button.subInst = instance
+
+                        self.popup = Popup(content=content, auto_dismiss=False, title = "Pick a synthesis key!", title_align = "center", )
+
+                        # bind the on_press event of the button to the dismiss function
+
+                        # open the popup
+                        self.popup.open()
+                    break
+                if(x==10):
+                    print('program terminated')
+                    self.progresslabel.text = "No Signal Found."
+                    instance.text = "Click button to check again for Signal."
                     break
                 x = x+1
                 print(x)
