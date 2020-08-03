@@ -49,15 +49,19 @@ with open('rawdata.csv', 'w', newline='') as file:
     first = arduino.read_until(b',')
     second = arduino.read_until(b',')
     third = arduino.read_until(b',')
-    fourth = arduino.read_until()
+    fourth = arduino.read_until(b',')
+    fifth = arduino.read_until(b',')
+    sixth = arduino.read_until()
 
     print(first.decode("utf-8"))
     print(second.decode("utf-8"))
     print(third.decode("utf-8"))
     print(fourth.decode("utf-8"))
+    print(fifth.decode("utf-8"))
+    print(sixth.decode("utf-8"))
 
     #write row in csv file
-    writer.writerow([first.decode("utf-8").replace(',',''), second.decode("utf-8").replace(',',''), third.decode("utf-8").replace(',',''), fourth.decode("utf-8")])
+    writer.writerow([first.decode("utf-8").replace(',',''), second.decode("utf-8").replace(',',''), third.decode("utf-8").replace(',',''), fourth.decode("utf-8").replace(',',''), fifth.decode("utf-8").replace(',',''), sixth.decode("utf-8")])
 
 #read csv file and put each row into json data structure
 #send it up to database
@@ -66,7 +70,7 @@ with open('rawdata.csv','r') as file:
   counter = 0
   for row in reader:
     if counter != 0:
-      data = {"alcohol": float(row[0]), "ammonia": float(row[1]), "hydrogen sulfide": float(row[2]), "formaldehyde": float(row[3])}
+      data = {"MQ3": float(row[0]), "MQ5": float(row[1]), "MQ137": float(row[2]), "MQ136": float(row[3]), "MQblank": float(row[4]), "MQblank2": float(row[5])}
       db.child("smells").push(data)
     counter = counter + 1
 
