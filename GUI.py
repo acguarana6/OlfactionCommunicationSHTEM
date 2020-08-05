@@ -94,35 +94,50 @@ class MainApp(App):
         gridlayout.add_widget(Button(text='COMPOUND', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]) )
         gridlayout.add_widget(Button(text='VALUE' ,background_color=[0, 0, 1, 1]) )
 
-        self.alcoholSol = TextInput(
-            halign="left", font_size=55, hint_text='Alcohol value'
+        self.MQ136 = TextInput(
+            halign="left", font_size=55, hint_text='MQ136 value'
         )
 
         #gridlayout.add_widget(Button(text='200'))
 
-        self.hySulSol = TextInput(
-            halign="left", font_size=55, hint_text='Hydrogen Sulfide value'
+        self.MQ137 = TextInput(
+            halign="left", font_size=55, hint_text='MQ137 value'
         )
 
-        self.ammoniaSol = TextInput(
-            halign="left", font_size=55, hint_text='Ammonia value'
+        self.MQ3 = TextInput(
+            halign="left", font_size=55, hint_text='MQ3 value'
         )
 
-        self.formalSol = TextInput(
-            halign="left", font_size=55, hint_text='Formaldehyde value'
+        self.MQ5 = TextInput(
+            halign="left", font_size=55, hint_text='MQ5 value'
         )
 
-        gridlayout.add_widget(Button(text='ALCOHOL', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.alcoholSol)
+        self.MQblank = TextInput(
+            halign="left", font_size=55, hint_text='MQblank value'
+        )
+        self.MQblank2 = TextInput(
+            halign="left", font_size=55, hint_text='MQblank2 value'
+        )
 
-        gridlayout.add_widget(Button(text='AMMONIA', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.ammoniaSol)
+        gridlayout.add_widget(Button(text='MQ136', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.MQ136)
 
-        gridlayout.add_widget(Button(text='FORMALDEHYDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.formalSol)
+        gridlayout.add_widget(Button(text='MQ137', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.MQ137)
 
-        gridlayout.add_widget(Button(text='HYDROGEN SULFIDE', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
-        gridlayout.add_widget(self.hySulSol)
+        gridlayout.add_widget(Button(text='MQ3', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.MQ3)
+
+        gridlayout.add_widget(Button(text='MQ5', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.MQ5)
+
+        gridlayout.add_widget(Button(text='MQblank', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.MQblank)
+
+        gridlayout.add_widget(Button(text='MQblank2', size_hint_x=None, width=350,background_color=[0, 0, 1, 1]))
+        gridlayout.add_widget(self.MQblank2)
+
+
 
         #gridlayout.add_widget(Button(text='200'))
 
@@ -158,13 +173,15 @@ class MainApp(App):
                 print(smelldict)
                 with open('finalsmelllist.csv', 'w', newline='') as file:
                     writer = csv.writer(file)
-                    writer.writerow(["alcohol", "ammonia", "formaldehyde", "hydrogen sulfide"])
+                    writer.writerow(["MQ136", "MQ137", "MQ3", "MQ5" , "MQblank" , "MQblank2"])
                     for key in smelldict:
-                        alcohol = db.child("smells").child(key).child("alcohol").get().val()
-                        ammonia = db.child("smells").child(key).child("ammonia").get().val()
-                        formal = db.child("smells").child(key).child("formaldehyde").get().val()
-                        hySul = db.child("smells").child(key).child("hydrogen sulfide").get().val()
-                        writer.writerow([alcohol, ammonia, formal, hySul])
+                        MQ136 = db.child("smells").child(key).child("MQ136").get().val()
+                        MQ137 = db.child("smells").child(key).child("MQ137").get().val()
+                        MQ3 = db.child("smells").child(key).child("MQ3").get().val()
+                        MQ5 = db.child("smells").child(key).child("MQ5").get().val()
+                        MQblank = db.child("smells").child(key).child("MQblank").get().val()
+                        MQblank2 = db.child("smells").child(key).child("MQblank2").get().val()
+                        writer.writerow([MQ136, MQ137, MQ3, MQ5 , MQblank , MQblank2])
                 print("Finished writing csv file.")
 
                 self.progresslabel.text = 'Data fetched! CSV generated in folder.'
@@ -173,21 +190,29 @@ class MainApp(App):
                 with open('finalsmelllist.csv', 'r') as file:
                     reader = csv.reader(file)
                     counter = 0.0
-                    alcoholcount = 0.0
-                    ammoniacount = 0.0
-                    formalcount = 0.0
-                    hysulcount = 0.0
+                    MQ136count = 0.0
+                    MQ137count = 0.0
+                    MQ3count = 0.0
+                    MQ5count = 0.0
+                    MQblankcount = 0.0
+                    MQblank2count = 0.0
+                    next(reader)
                     for row in reader:
                         if counter != 0.0:
-                            alcoholcount = alcoholcount + float(row[0])
-                            ammoniacount = ammoniacount + float(row[1])
-                            formalcount = formalcount + float(row[2])
-                            hysulcount = hysulcount + float(row[3])
+                            print(row[0] + "duykgxcfuysdhgflushlufhldhfldhufldshhdzjkhjkcxbhdjkkjjjjjjjjjjj")
+                            MQ136count = MQ136count + float(row[0])
+                            MQ137count = MQ137count + float(row[1])
+                            MQ3count = MQ3count + float(row[2])
+                            MQ5count = MQ5count + float(row[3])
+                            MQblankcount = MQblankcount + float(row[4])
+                            MQblank2count = MQblank2count + float(row[5])
                         counter = counter + 1.0
-                self.alcoholSol.text = str(alcoholcount / counter)
-                self.ammoniaSol.text = str(ammoniacount / counter)
-                self.formalSol.text = str(formalcount / counter)
-                self.hySulSol.text = str(hysulcount / counter)
+                self.MQ136.text = str(MQ136count / counter)
+                self.MQ137.text = str(MQ137count / counter)
+                self.MQ3.text = str(MQ3count / counter)
+                self.MQ5.text = str(MQ5count / counter)
+                self.MQblank.text = str(MQblankcount / counter)
+                self.MQblank2.text = str(MQblank2count / counter)
 
                 self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
                 self.swap_label('Data fetched! CSV generated in folder. On standby for a signal.')
