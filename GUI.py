@@ -13,7 +13,19 @@ from kivy.graphics import *
 from kivy.core.window import Window
 from kivy.uix.popup import Popup
 import csv
-import time
+
+import pickle
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+import pandas as pd
+import matplotlib.cm as cm
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+from scipy.stats import mode
+from sklearn.metrics import accuracy_score
 
 '''from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
@@ -42,8 +54,9 @@ purple = [1,0,1,1]
 
 class MainApp(App):
     def build(self):
-        chosenKeyInd = 0
-
+        self.chosenKeyInd = 0
+        self.valArray = []
+        
         Window.clearcolor = (0.5, 0.5, 0.5, 0.5)
         boxlayout = BoxLayout(orientation='vertical')
 
@@ -155,7 +168,7 @@ class MainApp(App):
         print('You pressed the button!')
         button_text = instance.text
         if button_text == 'START FETCHING DATA':
-
+            self.valArray = []
             self.progresslabel.text = 'Fetching data...'
             #create a csv file with all of the values from the firebase database
 
@@ -199,7 +212,6 @@ class MainApp(App):
                     next(reader)
                     for row in reader:
                         if counter != 0.0:
-                            print(row[0] + "duykgxcfuysdhgflushlufhldhfldhufldshhdzjkhjkcxbhdjkkjjjjjjjjjjj")
                             MQ136count = MQ136count + float(row[0])
                             MQ137count = MQ137count + float(row[1])
                             MQ3count = MQ3count + float(row[2])
@@ -213,7 +225,16 @@ class MainApp(App):
                 self.MQ5.text = str(MQ5count / counter)
                 self.MQblank.text = str(MQblankcount / counter)
                 self.MQblank2.text = str(MQblank2count / counter)
-
+                
+                self.valArray.append(MQ3count / counter)
+                self.valArray.append(MQ137count / counter)
+                self.valArray.append(MQ5count / counter)
+                self.valArray.append(MQblankcount / counter)
+                self.valArray.append(MQblank2count / counter)
+                
+                print("ValArray v")
+                print(self.valArray)
+                
                 self.progresslabel.text = 'Data fetched! CSV generated in folder. Values updated.'
                 self.swap_label('Data fetched! CSV generated in folder. On standby for a signal.')
 
@@ -240,7 +261,7 @@ class MainApp(App):
                     db = firebase.database()
                     keyDict = firebase.database().child("Signal").get().val()
                     keyList = list(keyDict)
-                    chosenKeyInd = 0
+                    self.chosenKeyInd = 0
                     finalKey = firebase.database().child("Signal").child(keyList[0]).get().val()
 
                     keyCount = int(len(keyDict))
@@ -302,6 +323,7 @@ class MainApp(App):
                     if(keyCount==1):
                         self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
                         instance.text = "Push to Database"
+                        chosenKeyInd = 0
                     else:
                         content = BoxLayout(orientation="vertical")
 
@@ -342,10 +364,135 @@ class MainApp(App):
             finalKey = firebase.database().child("Signal").child(keyList[self.chosenKeyInd]).get().val()
             b = db.child(finalKey)
 
-            #Algorithm goes here
+        #Algorithm goes here##---------------------------------##
+            
+            model = pickle.load(open("model.pkl", "rb"))
+            cluster_centers = model.cluster_centers_
+            print(cluster_centers)
 
-            #data = {"alcohol": self.alcoholSol.text,"ethanol": self.ethanolSol.text,"name": "test" }
-            data = 3
+            '''            with open('Enose4Data - Sheet2.csv', 'r') as file:
+            reader = csv.reader(file)
+            counter = 0.0
+            MQ136count = 0.0
+            MQ137count = 0.0
+            MQ3count = 0.0
+            MQ5count = 0.0
+            MQblankcount = 0.0
+            MQblank2count = 0.0
+            #next(reader)
+            for row in reader:
+                if counter != 0.0:
+                    #MQ136count = MQ136count + float(row[0])
+                    #MQ137count = MQ137count + float(row[1])
+                    #MQ3count = MQ3count + float(row[2])
+                    #MQ5count = MQ5count + float(row[3])
+                    #MQblankcount = MQblankcount + float(row[4])
+                    #MQblank2count = MQblank2count + float(row[5])
+                
+                    MQ137count = MQ137count + float(row[1])
+                    MQ3count = MQ3count + float(row[0])
+                    MQ5count = MQ5count + float(row[2])
+                    MQblankcount = MQblankcount + float(row[3])
+                    MQblank2count = MQblank2count + float(row[4])
+                counter = counter + 1.0
+
+
+            x = np.array([[(MQ3count / counter),(MQ137count / counter),(MQ5count / counter),(MQblankcount / counter),(MQblank2count / counter)]])'''
+                #with open('Enose4Data - Sheet2.csv', 'r') as csvfile:
+            '''df = pd.read_csv(csvfile, names=['MQ-3', 'MQ-136', 'MQ-137', 'MQ-5', 'sens5', 'sens6'],skiprows = 0)
+            
+            features = ['MQ-3', 'MQ-137', 'MQ-5','sens5','sens6']
+            
+            x = df.loc[:, features].values
+            
+            sensor1list = (df.loc[:, features[0]].values)
+            np.average(sensor1list)
+            
+            numOfAvgs = int(np.floor(len(sensor1list)/60))
+            #print(numOfAvgs)
+            avgDf = pd.DataFrame(columns = ['MQ-3','MQ-137', 'MQ-5', 'sens5', 'sens6'])
+            print("-------")
+            #print(df)
+            
+            d=[]
+            d2=[]
+            for y in range(len(features)):
+                sensorList = df.loc[:, features[y]].values
+                
+                d1=[]
+                for x in range(numOfAvgs):
+                    thisAvg = np.average(sensorList[60*(x):59+60*x])
+                    column = features[y]
+                    d1.append(thisAvg)
+                
+                avgDf[features[y]] = d1
+
+            print(avgDf)
+
+            x = avgDf.values'''
+                #print(x)
+            valArray = self.valArray
+            
+            '''valArray = []
+            valArray.append(104.7)
+            valArray.append(13.0)
+            valArray.append(88.3)
+            valArray.append(7.6)
+            valArray.append(71.26)'''
+            #MQ-137 Compensation
+            valArray[1] = (8 + ((valArray[1]-8)*0.3))
+            valArray[3] = (3 + ((valArray[3]-3)*0.3))
+            
+            x = np.array([[valArray[0],valArray[1],valArray[2]+15,valArray[3],valArray[4]+15]])
+            
+            print("-------")
+            print(x)
+
+            means = np.array([166.37231638,14.13785311,81.09830508,8.26836158,71.52429379])
+            var = np.array([2.79313436e+03,1.58327556e+00,1.30084535e+01,4.90148106e-01,1.21464509e+01])
+
+            components = np.array([[-0.49069964, -0.47837671,  0.40657063, -0.41569701, -0.43848136], [-0.08091511, -0.27557583, -0.62010735,  0.42913253, -0.59061228]])
+            x = ((x-means)/var**0.5)
+            comp1 = np.dot(x,components[0])
+           
+            comp2 = np.dot(x,components[1])
+            #print(comp1)
+            #print(comp2)
+            print("------")
+            pr = ([comp1[0],comp2[0]],[comp1[0],comp2[0]])
+            print(pr)
+            print("------")
+            pr = model.predict(pr)
+            print(pr)
+            ind = (pr[0])
+            centerRnd = int(np.round(cluster_centers[pr[0],0]*10))
+            if(centerRnd==21):
+                print(5)
+                print("LemonGrass")
+                finalNum = 4
+            if(centerRnd==-16):
+                print(2)
+                print("TeaTree") #Orange, 3
+                finalNum = 5
+            if(centerRnd==10):
+                print(1)
+                print("Peppermint")
+                finalNum = 1
+            if(centerRnd==-8):
+                print(3)
+                print("Eucalyptus")
+                finalNum = 2
+            if(centerRnd==26):
+                print(4)
+                print("Lavendar")
+                finalNum = 6
+            if(centerRnd==-22):
+                print(0)
+                print("TeaTree")
+                finalNum = 5
+        
+    #Algorithm ends here##---------------------------------##
+            data = finalNum
             b.child("finalint").set(data)
             self.progresslabel.text = 'Data sent!'
             instance.text = "START FETCHING DATA"
@@ -354,7 +501,7 @@ class MainApp(App):
         print(progText)
     def chooseSignal(self, instance):
 
-        self.chosenKeyInd = instance.thisKeyInd
+#self.chosenKeyInd = instance.thisKeyInd
 
         db = firebase.database()
         keyDict = firebase.database().child("Signal").get().val()
@@ -363,7 +510,6 @@ class MainApp(App):
 
         self.progresslabel.text = 'Ready to Go! Key = ' + str(finalKey)
         instance.subInst.text = "Push to Database"
-
 
         self.popup.dismiss()
 
