@@ -57,7 +57,7 @@ class MainApp(App):
         Window.size = (800, 725)
         self.chosenKeyInd = 0
         self.valArray = []
-        
+        self.smellName = "ERR"
         Window.clearcolor = (0.5, 0.5, 0.5, 0.5)
         boxlayout = BoxLayout(orientation='vertical')
 
@@ -397,27 +397,33 @@ class MainApp(App):
             print(currentLowest)
             if currentLowest == 0:
                 print("LemonGrass")
+                self.smellName = "LemonGrass"
                 finalNum = 4
             if currentLowest == 1:
                 print("Eucalyptus")
+                self.smellName = "Eucalyptus"
                 finalNum = 2
             if currentLowest == 2:
                 print("Peppermint")
+                self.smellName = "Peppermint"
                 finalNum = 1
             if currentLowest == 3:
                 print("Lavendar")
+                self.smellName = "Lavendar"
                 finalNum = 6
             if currentLowest == 4:
                 print("TeaTree")
+                self.smellName = "TeaTree"
                 finalNum = 5
             if currentLowest == 5:
                 print("Orange")
+                self.smellName = "Orange"
                 finalNum = 3
         
     #Algorithm ends here##---------------------------------##
             data = finalNum
             b.child("finalint").set(data)
-            self.progresslabel.text = 'Data sent!'
+            self.progresslabel.text = 'Smell classified as ' + self.smellName + '. Data sent!'
             instance.text = "START FETCHING DATA"
     def swap_label(self, progText):
         self.progresslabel.text = progText
