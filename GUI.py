@@ -54,6 +54,7 @@ purple = [1,0,1,1]
 
 class MainApp(App):
     def build(self):
+        Window.size = (800, 725)
         self.chosenKeyInd = 0
         self.valArray = []
         
@@ -365,131 +366,53 @@ class MainApp(App):
             b = db.child(finalKey)
 
         #Algorithm goes here##---------------------------------##
-            
-            model = pickle.load(open("model.pkl", "rb"))
-            cluster_centers = model.cluster_centers_
-            print(cluster_centers)
 
-            '''            with open('Enose4Data - Sheet2.csv', 'r') as file:
-            reader = csv.reader(file)
-            counter = 0.0
-            MQ136count = 0.0
-            MQ137count = 0.0
-            MQ3count = 0.0
-            MQ5count = 0.0
-            MQblankcount = 0.0
-            MQblank2count = 0.0
-            #next(reader)
-            for row in reader:
-                if counter != 0.0:
-                    #MQ136count = MQ136count + float(row[0])
-                    #MQ137count = MQ137count + float(row[1])
-                    #MQ3count = MQ3count + float(row[2])
-                    #MQ5count = MQ5count + float(row[3])
-                    #MQblankcount = MQblankcount + float(row[4])
-                    #MQblank2count = MQblank2count + float(row[5])
-                
-                    MQ137count = MQ137count + float(row[1])
-                    MQ3count = MQ3count + float(row[0])
-                    MQ5count = MQ5count + float(row[2])
-                    MQblankcount = MQblankcount + float(row[3])
-                    MQblank2count = MQblank2count + float(row[4])
-                counter = counter + 1.0
-
-
-            x = np.array([[(MQ3count / counter),(MQ137count / counter),(MQ5count / counter),(MQblankcount / counter),(MQblank2count / counter)]])'''
-                #with open('Enose4Data - Sheet2.csv', 'r') as csvfile:
-            '''df = pd.read_csv(csvfile, names=['MQ-3', 'MQ-136', 'MQ-137', 'MQ-5', 'sens5', 'sens6'],skiprows = 0)
-            
-            features = ['MQ-3', 'MQ-137', 'MQ-5','sens5','sens6']
-            
-            x = df.loc[:, features].values
-            
-            sensor1list = (df.loc[:, features[0]].values)
-            np.average(sensor1list)
-            
-            numOfAvgs = int(np.floor(len(sensor1list)/60))
-            #print(numOfAvgs)
-            avgDf = pd.DataFrame(columns = ['MQ-3','MQ-137', 'MQ-5', 'sens5', 'sens6'])
-            print("-------")
-            #print(df)
-            
-            d=[]
-            d2=[]
-            for y in range(len(features)):
-                sensorList = df.loc[:, features[y]].values
-                
-                d1=[]
-                for x in range(numOfAvgs):
-                    thisAvg = np.average(sensorList[60*(x):59+60*x])
-                    column = features[y]
-                    d1.append(thisAvg)
-                
-                avgDf[features[y]] = d1
-
-            print(avgDf)
-
-            x = avgDf.values'''
-                #print(x)
             valArray = self.valArray
             
+            
             '''valArray = []
-            valArray.append(104.7)
+            valArray.append(111)
             valArray.append(13.0)
             valArray.append(88.3)
             valArray.append(7.6)
             valArray.append(71.26)'''
-            #MQ-137 Compensation
-            valArray[1] = (8 + ((valArray[1]-8)*0.3))
-            valArray[3] = (3 + ((valArray[3]-3)*0.3))
             
-            x = np.array([[valArray[0],valArray[1],valArray[2]+15,valArray[3],valArray[4]+15]])
-            
-            print("-------")
+            x = valArray[0]
             print(x)
+            testAvg = x
+            #testAvg = 190
+            print(testAvg)
+            
+            meanList = [101.77966101694915, 187.50169491525423, 143.08474576271186, 111.5186440677966, 207.4237288135593, 246.92542372881357]
 
-            means = np.array([166.37231638,14.13785311,81.09830508,8.26836158,71.52429379])
-            var = np.array([2.79313436e+03,1.58327556e+00,1.30084535e+01,4.90148106e-01,1.21464509e+01])
+            dists = []
+            currentLowest = 0
+            for x in range(6):
+                dists.append(abs(testAvg-meanList[x]))
+                if(x!=0):
+                    if(dists[x]<dists[currentLowest]):
+                        currentLowest = x
 
-            components = np.array([[-0.49069964, -0.47837671,  0.40657063, -0.41569701, -0.43848136], [-0.08091511, -0.27557583, -0.62010735,  0.42913253, -0.59061228]])
-            x = ((x-means)/var**0.5)
-            comp1 = np.dot(x,components[0])
-           
-            comp2 = np.dot(x,components[1])
-            #print(comp1)
-            #print(comp2)
-            print("------")
-            pr = ([comp1[0],comp2[0]],[comp1[0],comp2[0]])
-            print(pr)
-            print("------")
-            pr = model.predict(pr)
-            print(pr)
-            ind = (pr[0])
-            centerRnd = int(np.round(cluster_centers[pr[0],0]*10))
-            if(centerRnd==21):
-                print(5)
+            print(dists)
+            print(currentLowest)
+            if currentLowest == 0:
                 print("LemonGrass")
                 finalNum = 4
-            if(centerRnd==-16):
-                print(2)
-                print("TeaTree") #Orange, 3
-                finalNum = 5
-            if(centerRnd==10):
-                print(1)
-                print("Peppermint")
-                finalNum = 1
-            if(centerRnd==-8):
-                print(3)
+            if currentLowest == 1:
                 print("Eucalyptus")
                 finalNum = 2
-            if(centerRnd==26):
-                print(4)
+            if currentLowest == 2:
+                print("Peppermint")
+                finalNum = 1
+            if currentLowest == 3:
                 print("Lavendar")
                 finalNum = 6
-            if(centerRnd==-22):
-                print(0)
+            if currentLowest == 4:
                 print("TeaTree")
                 finalNum = 5
+            if currentLowest == 5:
+                print("Orange")
+                finalNum = 3
         
     #Algorithm ends here##---------------------------------##
             data = finalNum
